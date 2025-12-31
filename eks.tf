@@ -10,6 +10,14 @@ module "eks" {
 
   enable_irsa = true
 
+  # Enable all control plane logging for security compliance (Trivy AVD-AWS-0038)
+  cluster_enabled_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
+
+  # Note on Trivy AVD-AWS-0104: EKS node groups require egress to 0.0.0.0/0 for:
+  # - ECR image pulls, S3 access, EC2 metadata service, VPC endpoints
+  # - Kubernetes API communication, cluster add-ons, and AWS service integration
+  # This is a standard AWS EKS configuration requirement
+
   eks_managed_node_groups = {
     default = {
       min_size     = 1
